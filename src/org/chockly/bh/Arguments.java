@@ -2,7 +2,6 @@ package org.chockly.bh;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,34 +9,37 @@ import java.util.List;
  * Command line arguments for Bind Helper
  * @author Curtis
  */
-@Parameters(commandDescription = "Add and remove definitions from a bind configuration file")
+@Parameters(commandDescription = "Add and remove definitions from a bind9/dnsmasq configuration file")
 public class Arguments {
     
-    @Parameter(description="The zones to add or remove")
-    private List<String> zones = new ArrayList<>();
+    @Parameter(description="The domains to add or remove")
+    private List<String> domains = new ArrayList<>();
     
-    @Parameter(names={"--file", "-f"}, description="The bind definitions file to modify")
-    private String file = "/etc/bind/named.conf.local";
+    @Parameter(names={"-d", "--destination"}, description="The zone's definition file or IP address for dnsmasq")
+    private String destination;
     
-    @Parameter(names={"--help", "-h"}, description="Print out this help message", help=true)
-    private boolean help = false;
-    
-    @Parameter(names={"--section-header", "-e"}, description="The string that indicates the start of a section")
+    @Parameter(names={"-e", "--section-header"}, description="The string that indicates the start of a section")
     private String sectionIndicator = "// $";
     
-    @Parameter(names={"--notify", "-n"}, description="If the provided zone should notify of changes")
+    @Parameter(names={"-f", "--file"}, description="The configuration file to modify")
+    private String file = "/etc/bind/named.conf.local";
+    
+    @Parameter(names={"-h", "--help"}, description="Print out this help message", help=true)
+    private boolean help = false;
+    
+    @Parameter(names={"-n", "--notify"}, description="If the provided domains should notify of changes. Bind9 only.")
     private boolean notify = false;
     
-    @Parameter(names={"--zone-file", "-z"}, description="The zone's definition file", required=true)
-    private String zoneFile;
+    @Parameter(names={"-m", "--dnsmasq"}, description="Set to dnsmasq mode")
+    private boolean dnsmasqMode = false;
     
-    @Parameter(names={"--section", "-s"}, description="The section to place the new zones into. If not specified zones will be placed at the start of the file")
-    private String section = "";
-    
-    @Parameter(names={"--sort", "-o"}, description="Sort the section after adding the zones")
+    @Parameter(names={"-o", "--sort"}, description="Sort the section after adding the domains")
     private boolean sort = false;
     
-    @Parameter(names={"--type", "-t"}, description="The type of zone. Defaults to 'master'")
+    @Parameter(names={"-s", "--section"}, description="The section to place the new domains into. If not specified domains will be placed at the start of the file")
+    private String section = "";
+    
+    @Parameter(names={"-t", "--type"}, description="The type of zone. Defaults to 'master'. Bind9 only.")
     private String type = "master";
     
     @Parameter(names={"--comment"}, description="Set the characters that define the start of a comment. Defaults to '//'", hidden=true)
@@ -50,8 +52,8 @@ public class Arguments {
     /**
      * @return the zones
      */
-    public List<String> getZones() {
-        return zones;
+    public List<String> getDomains() {
+        return domains;
     }
 
     /**
@@ -64,7 +66,7 @@ public class Arguments {
     /**
      * @return the help
      */
-    public boolean isHelp() {
+    public boolean helpRequested() {
         return help;
     }
 
@@ -78,15 +80,15 @@ public class Arguments {
     /**
      * @return the notify
      */
-    public boolean isNotify() {
+    public boolean shouldNotify() {
         return notify;
     }
 
     /**
      * @return the zoneFile
      */
-    public String getZoneFile() {
-        return zoneFile;
+    public String getDestination() {
+        return destination;
     }
 
     /**
@@ -99,7 +101,7 @@ public class Arguments {
     /**
      * @return the sort
      */
-    public boolean isSort() {
+    public boolean shouldSort() {
         return sort;
     }
 
@@ -115,5 +117,12 @@ public class Arguments {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * @return the dnsmasqMode
+     */
+    public boolean isDnsmasqMode() {
+        return dnsmasqMode;
     }
 }
